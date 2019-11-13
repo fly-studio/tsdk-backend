@@ -4,7 +4,7 @@ use Illuminate\Support\Facades\Schema;
 use Illuminate\Database\Schema\Blueprint;
 use Illuminate\Database\Migrations\Migration;
 
-class MakeGame extends Migration
+class MakeApp extends Migration
 {
     /**
      * Run the migrations.
@@ -19,7 +19,7 @@ class MakeGame extends Migration
 
             $fields = [
                 'channel|渠道' => [
-                    'sdk|Times SDK' => [],
+                    'times|Times SDK' => [],
                     'ysdk|应用宝' => [],
                     'vivo|VIVO' => [],
                     'oppo|OPPO' => [],
@@ -32,6 +32,7 @@ class MakeGame extends Migration
                     'vc|代金券' => [],
                     'wechat|微信' => [],
                     'alipay|支付宝' => [],
+                    'unionpay|银联' => [],
                     'ysdk|应用宝' => [],
                     'vivo|VIVO' => [],
                     'oppo|OPPO' => [],
@@ -45,11 +46,11 @@ class MakeGame extends Migration
             \App\Catalog::import($fields, \App\Catalog::findByName('fields'));
 
             $status = [
-                'game_status|游戏状态' => [
+                'app_status|游戏状态' => [
                     'enabled|启用' => [],
                     'disabled|禁用' => [],
                 ],
-                'game_order_status|游戏订单状态' => [
+                'app_order_status|游戏订单状态' => [
                     'pedding|订单创建' => [],
                     'paid_success|支付成功' => [],
                     'success|发货成功' => [],
