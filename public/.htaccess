@@ -4,7 +4,7 @@
 	</IfModule>
 
 	RewriteEngine On
-	RewriteBase /projects/base/public/
+	RewriteBase /projects/tsdk-backend/public/
 
 	# Handle Authorization Header
 	RewriteCond %{HTTP:Authorization} .
