@@ -17,10 +17,3 @@ use Illuminate\Http\Request;
     return $request->user();
 });
 */
-
-
-$router->api('v1', ['middleware' => 'sign'], function($router){
-	$router->post('test', function(){
-		return 'ok';
-	});
-});

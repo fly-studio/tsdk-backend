@@ -14,7 +14,7 @@ class HomeController extends Controller
 	 */
 	public function index(Request $request)
 	{
-		return $this->view('index');
+		return $this->error('document.not_exists')->code(404)->action('redirect', 'login');
 	}
 
 }

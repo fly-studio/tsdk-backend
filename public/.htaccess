@@ -1,10 +1,10 @@
 <IfModule mod_rewrite.c>
 	<IfModule mod_negotiation.c>
-        Options -MultiViews -Indexes
+		Options -MultiViews -Indexes
 	</IfModule>
 
 	RewriteEngine On
-	RewriteBase /projects/tsdk-backend/public/
+	RewriteBase /projects/tsdk/public/
 
 	# Handle Authorization Header
 	RewriteCond %{HTTP:Authorization} .
