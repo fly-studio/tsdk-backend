@@ -33,6 +33,17 @@ class Handler extends ExceptionHandler
 		'password',
 		'password_confirmation',
 	];
+	
+	/**
+	* Report or log an exception.
+	*
+	* @param  \Exception  $exception
+	* @return void
+	*/
+	public function report(Exception $exception)
+	{
+		parent::report($exception);
+	}
 
 	/**
 	 * Render an exception into an HTTP response.
@@ -99,16 +110,16 @@ class Handler extends ExceptionHandler
 	}
 
 	/**
-     * Prepare a response for the given exception.
-     *
-     * @param  \Illuminate\Http\Request  $request
-     * @param  \Exception $e
-     * @return \Symfony\Component\HttpFoundation\Response
-     */
-    protected function prepareResponse($request, Exception $e)
-    {
-    	return in_array('api', $request->route()->middleware()) ? $this->prepareJsonResponse($request, $e) : parent::prepareResponse($request, $e);
-    }
+	 * Prepare a response for the given exception.
+	 *
+	 * @param  \Illuminate\Http\Request  $request
+	 * @param  \Exception $e
+	 * @return \Symfony\Component\HttpFoundation\Response
+	 */
+	protected function prepareResponse($request, Exception $e)
+	{
+		return in_array('api', $request->route()->middleware()) ? $this->prepareJsonResponse($request, $e) : parent::prepareResponse($request, $e);
+	}
 
 	/**
 	 * Convert an authentication exception into a response.
