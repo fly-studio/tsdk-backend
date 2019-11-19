@@ -166,9 +166,7 @@ class CreateAppTables extends Migration
             $table->unsignedInteger('aid')->index()->default(0)->comment = 'apps ID';
             $table->unsignedBigInteger('did')->index()->comment = '设备ID';
             $table->unsignedBigInteger('uid')->index()->nullable()->comment = 'users id（部分事件为空）';
-            $table->string("from_type")->index()->nullable()->comment = '关联到Model';
-            $table->unsignedBigInteger("from_id")->index()->nullable()->comment = '关联到ID';
-
+            $table->nullableMorphs("from");
             $table->longText('value')->nullable()->comment = '上报的正文';
 
             $table->unsignedBigInteger('device_utc')->default(0)->comment = '设备UTC时间';
