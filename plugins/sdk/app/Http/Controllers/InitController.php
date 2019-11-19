@@ -14,7 +14,7 @@ class InitController extends Controller
 	/**
 	 * 初始化逻辑
 	 * 1. SDK在本地文件读取tsdk/device文件，没有就生成uuid
-	 * 2. 将本地能够读取到的设备信息都补充到这个文件，也就是说，SDK其下的其它APP也可以可以相互补充
+	 * 2. 将本地能够读取到的设备信息都补充到这个文件，也就是说，SDK旗下的其它APP也可以可以相互补充
 	 * Android 10设备唯一值获取：https://developer.android.com/training/articles/user-data-ids
 	 *
 	 * @param  Request             $request       [description]

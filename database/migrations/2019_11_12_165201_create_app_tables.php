@@ -158,26 +158,23 @@ class CreateAppTables extends Migration
             $table->foreign('aid')->references('id')->on('apps')->onDelete('cascade');
         });
 
-
         Schema::create('app_events', function(Blueprint $table) {
             $table->bigIncrements('id');
 
             $table->unsignedInteger('event_type')->index()->default(0)->comment = '事件类型';
             $table->unsignedInteger('aid')->index()->default(0)->comment = 'apps ID';
             $table->unsignedBigInteger('did')->index()->comment = '设备ID';
-            $table->unsignedBigInteger('uid')->index()->nullable()->comment = 'users id（部分事件为空）';
+            $table->unsignedBigInteger('auid')->index()->nullable()->comment = 'app_users id（部分事件为空）';
             $table->nullableMorphs("from");
             $table->longText('value')->nullable()->comment = '上报的正文';
 
-            $table->unsignedBigInteger('device_utc')->default(0)->comment = '设备UTC时间';
-            $table->ipAddr('ip')->nullable()->comment = '登录IP';
+            $table->unsignedBigInteger('device_utc')->default(0)->comment = '设备UTC时间戳';
+            $table->ipAddress('ip')->nullable()->comment = '登录IP';
 
             $table->timestamps();
 
-            $table->index(["{$name}_type", "{$name}_id"], $indexName);
-
             $table->foreign('aid')->references('id')->on('apps')->onDelete('cascade');
-            $table->foreign('uid')->references('id')->on('users')->onDelete('cascade');
+            $table->foreign('auid')->references('id')->on('app_users')->onDelete('cascade');
         });
 
     }
