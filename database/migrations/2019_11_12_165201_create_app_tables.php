@@ -19,11 +19,11 @@ class CreateAppTables extends Migration
             $table->unsignedInteger('pid')->index()->default(0)->comment = '父级ID';
             $table->string('path')->index()->comment = 'Tree Path';
             $table->string('name', 50)->comment = 'App 名字';
+            $table->string('key', 50)->nullable()->comment = 'APP KEY';
+            $table->string('package', 100)->nullable()->comment = '包名';
             $table->unsignedInteger('app_status')->index()->default(0)->comment = '状态';
-            $table->unsignedInteger('channel')->index()->default(0)->comment = '硬核通道';
-            $table->string('app_id', 50)->index()->comment = '对外的Appid';
-            $table->string('app_key', 50)->comment = 'AppKey';
-            $table->json('app_params')->nullable()->comment = '其它参数';
+            $table->unsignedInteger('channel')->index()->default(0)->comment = '第三方SDK通道，比如tencent_ysdk';
+            $table->json('sdk_params')->nullable()->comment = 'SDK的参数';
             $table->string('cp_callback', 255)->nullable()->comment = 'CP支付回调';
             $table->decimal('channel_rate', 7, 5)->default('0')->comment = '硬核通道费比例';
             $table->decimal('cp_rate', 7, 5)->default('0')->comment = 'CP比例';
@@ -35,12 +35,12 @@ class CreateAppTables extends Migration
             $table->index('deleted_at');
         });
 
-        // APP启动表，Application onCreate的时候会来拉取
-        // Token贯穿Application的生命周期
+        // 冗余表：APP启动表，用于计算激活数据
+        // Token字段贯穿Application的生命周期
         Schema::create('app_launches', function (Blueprint $table) {
             $table->bigIncrements('id');
-            $table->unsignedInteger('aid')->index()->default(0)->comment = 'apps id';
-            $table->unsignedBigInteger('did')->index()->default(0)->comment = '设备ID';
+            $table->unsignedInteger('aid')->index()->comment = 'apps id';
+            $table->unsignedBigInteger('did')->index()->comment = '设备ID';
             $table->string('token', 100)->comment = '伴随APP生命周期的token';
             $table->timestamps();
 
@@ -51,12 +51,12 @@ class CreateAppTables extends Migration
 
         });
 
-        // App 用户
+        // App+用户关系表
         Schema::create('app_users', function (Blueprint $table) {
             $table->bigIncrements('id');
-            $table->unsignedInteger('aid')->index()->default(0)->comment = 'apps id';
-            $table->unsignedInteger('uid')->index()->default(0)->comment = 'users id';
-            $table->string('cp_user_id', 100)->index()->comment = 'CP用户ID';
+            $table->unsignedInteger('aid')->index()->comment = 'apps id';
+            $table->unsignedBigInteger('uid')->index()->comment = 'users id';
+            $table->string('cp_user_id', 100)->nullable()->index()->comment = 'CP用户ID';
 
             $table->timestamps();
 
@@ -70,18 +70,26 @@ class CreateAppTables extends Migration
         \DB::statement('ALTER TABLE `app_users` ADD `cp_user_binary` VARBINARY(16) after `cp_user_id`;');
         \DB::statement('ALTER TABLE `app_users` ADD INDEX(`cp_user_binary`);');
 
+        /**
+         * 冗余表：用户登录表，用于计算活跃、新增
+         */
         Schema::create('app_user_logins', function (Blueprint $table) {
             $table->bigIncrements('id');
-            $table->unsignedInteger('aid')->index()->default(0)->comment = 'apps ID(冗余)';
-            $table->unsignedBigInteger('auid')->index()->default(0)->comment = 'app_users UID';
-            $table->unsignedBigInteger('alid')->index()->default(0)->comment = 'app_launches ID';
-            $table->unsignedInteger('online')->index()->default(0)->comment = '在线时长(秒)';
+            $table->unsignedInteger('aid')->index()->comment = 'apps ID(冗余)';
+            $table->unsignedBigInteger('auid')->index()->comment = 'app_users UID';
+            $table->unsignedBigInteger('alid')->index()->comment = 'app_launches ID';
+
             $table->timestamps();
 
             $table->index('created_at');
+            $table->foreign('aid')->references('id')->on('apps')->onDelete('cascade');
+            $table->foreign('auid')->references('id')->on('app_users')->onDelete('cascade');
             $table->foreign('alid')->references('id')->on('app_launches')->onDelete('cascade');
         });
 
+        /**
+         * 订单表
+         */
         Schema::create('app_orders', function (Blueprint $table) {
             $table->bigIncrements('id');
             $table->string('order_no', 50)->index()->comment = '订单号';
@@ -150,6 +158,30 @@ class CreateAppTables extends Migration
             $table->foreign('aid')->references('id')->on('apps')->onDelete('cascade');
         });
 
+
+        Schema::create('app_events', function(Blueprint $table) {
+            $table->bigIncrements('id');
+
+            $table->unsignedInteger('event_type')->index()->default(0)->comment = '事件类型';
+            $table->unsignedInteger('aid')->index()->default(0)->comment = 'apps ID';
+            $table->unsignedBigInteger('did')->index()->comment = '设备ID';
+            $table->unsignedBigInteger('uid')->index()->nullable()->comment = 'users id（部分事件为空）';
+            $table->string("from_type")->index()->nullable()->comment = '关联到Model';
+            $table->unsignedBigInteger("from_id")->index()->nullable()->comment = '关联到ID';
+
+            $table->longText('value')->nullable()->comment = '上报的正文';
+
+            $table->unsignedBigInteger('device_utc')->default(0)->comment = '设备UTC时间';
+            $table->ipAddr('ip')->nullable()->comment = '登录IP';
+
+            $table->timestamps();
+
+            $table->index(["{$name}_type", "{$name}_id"], $indexName);
+
+            $table->foreign('aid')->references('id')->on('apps')->onDelete('cascade');
+            $table->foreign('uid')->references('id')->on('users')->onDelete('cascade');
+        });
+
     }
 
     /**
@@ -159,6 +191,7 @@ class CreateAppTables extends Migration
      */
     public function down()
     {
+        Schema::dropIfExists('app_events');
         Schema::dropIfExists('app_daily_stats');
         Schema::dropIfExists('app_stats');
         Schema::dropIfExists('app_orders');

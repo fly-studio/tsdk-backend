@@ -41,6 +41,22 @@ class MakeApp extends Migration
                     'facebook|FaceBook' => [],
                     'google|Google' => [],
                 ],
+                'event_type' => [
+                    'launch|启动APP(onCreate)' => [],
+                    'pause|APP被暂停(onPause)' => [],
+                    'resume|APP被恢复(onResume)' => [],
+                    'tick|定时上报' => [],
+                    'exception|异常' => [],
+                    'crash|崩溃' => [],
+                    'init|初始化SDK' => [],
+                    'register|注册' => [],
+                    'generate_username|快速注册' => [],
+                    'login|登录' => [],
+                    'logout|登出' => [],
+                    'pay|唤起支付' => [],
+                    'paid|支付完成' => [],
+                    'cancel_pay|支付取消' => [],
+                ],
             ];
 
             \App\Catalog::import($fields, \App\Catalog::findByName('fields'));

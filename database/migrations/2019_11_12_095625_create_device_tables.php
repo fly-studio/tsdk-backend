@@ -15,13 +15,24 @@ class CreateDeviceTables extends Migration
     {
         Schema::create('devices', function (Blueprint $table) {
             $table->bigIncrements('id');
-            $table->string('device_id', 64)->unique()->comment = '全局唯一码，不限于IMEI，UDID或安全联盟的OAID';
-            $table->string('imei', 64)->nullable()->index()->comment = '国际移动设备识别码';
-            $table->string('udid', 64)->nullable()->index()->comment = '设备唯一标识符';
-            $table->string('device', 100)->index()->nullable()->comment = '设备，比如：iPhone, Nexus, AsusTablet';
-            $table->string('platform', '20')->index()->nullable()->comment = '平台，比如：Ubuntu, Windows, OS X,';
-            $table->string('os', '20')->index()->nullable()->comment = '系统';
-            $table->string('os_version', '20')->index()->nullable()->comment = '系统';
+            $table->string('uuid', 64)->unique()->comment = '本站全局唯一码';
+
+            $table->string('imei', 64)->nullable()->index()->comment = '国际移动设备识别码(不一定能获取)';
+            $table->string('udid', 64)->nullable()->index()->comment = '设备唯一标识符(不一定能获取)';
+            $table->string('idfa', 64)->nullable()->index()->comment = '苹果IDFA';
+            $table->string('android_id', 64)->nullable()->index()->comment = 'Android ID';
+            $table->string('serial', 64)->nullable()->index()->comment = '手机序列号';
+
+            $table->string('brand', 32)->nullable()->index()->comment = '品牌，比如:LG，Redmi';
+            $table->string('model', 32)->nullable()->comment = '设备，比如:Note 8';
+            $table->string('arch', 32)->nullable()->comment = '平台，比如armeabi-v7a_armeabi';
+            $table->string('os', '20')->index()->nullable()->comment = '系统，比如：Android';
+            $table->string('os_version', '20')->index()->nullable()->comment = '系统版本 比如：8.0.0';
+            $table->string('mac', 32)->nullable()->comment = 'Wifi MAC';
+            $table->string('bluetooth', 32)->nullable()->comment = 'Wifi MAC';
+            $table->string('metrics', 15)->index()->nullable()->comment = '屏幕尺寸，比如：720x1280';
+            $table->tinyInt('is_root')->index()->default(0)->comment = '是否Root或越狱';
+            $table->tinyInt('is_simulator')->index()->default(0)->comment = '是否模拟器';
 
             $table->timestamp('last_at')->nullable()->index()->comment = '最后活动时间';
             $table->timestamps();
@@ -29,6 +40,7 @@ class CreateDeviceTables extends Migration
 
         \DB::statement('ALTER TABLE `devices` ADD `device_binary` VARBINARY(16) after `device_id`;');
         \DB::statement('ALTER TABLE `devices` ADD INDEX(`device_binary`);');
+
     }
 
     /**
@@ -38,6 +50,7 @@ class CreateDeviceTables extends Migration
      */
     public function down()
     {
+        Schema::dropIfExists('events');
         Schema::dropIfExists('devices');
     }
 }
