@@ -22,17 +22,19 @@ class InitController extends Controller
 	 * @param  AppLaunchRepository $appLaunchRepo [description]
 	 * @return [type]                             [description]
 	 */
-	public function index(Request $request, DeviceRepository $deviceRepo, AppLaunchRepository $appLaunchRepo)
+	public function index(Request $request, DeviceRepository $deviceRepo, AppLaunchRepository $appLaunchRepo, AppEventRepository $appEventRepo)
 	{
 		$json = $request->json();
 
-		$data = $this->censor($request, 'sdk::device.fields', ['app_id', 'uuid']);
+		$data = $this->censor($request, 'sdk::device.fields', ['app_id', 'uuid', 'sdk_version']);
 
-		$device = $deviceRepo->createOrUpdate($data['uuid'], Arr::only($json, [/*机器码*/'imei', 'udid', 'idfa', 'oaid', 'android_id', 'serial', /*机器配置*/'brand', 'model', 'arch', 'os', 'os_version', 'mac', 'bluetooth', 'metrics', 'is_root', 'is_simulator']));
+		$device = $deviceRepo->updateDevice($data['uuid'], $json);
 
-		$token = $appLaunchRepo->create($data['app_id'], $device->getKey());
+		$appLaunch = $appLaunchRepo->launch($data['app_id'], $device->getKey(), $data['sdk_version']);
 
-		return $this->api(['token' => $token, 'uuid' => $data['uuid']]);
+		$appEventRepo->launch();
+
+		return $this->api(['token' => $appLaunch->token, 'uuid' => $device['uuid']]);
 	}
 
 }

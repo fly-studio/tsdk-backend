@@ -20,7 +20,7 @@ class CreateAppTables extends Migration
             $table->string('path')->index()->comment = 'Tree Path';
             $table->string('name', 50)->comment = 'App 名字';
             $table->string('key', 50)->nullable()->comment = 'APP KEY';
-            $table->string('package', 100)->nullable()->comment = '包名';
+            $table->string('package_name', 100)->nullable()->comment = '包名';
             $table->unsignedInteger('app_status')->index()->default(0)->comment = '状态';
             $table->unsignedInteger('channel')->index()->default(0)->comment = '第三方SDK通道，比如tencent_ysdk';
             $table->json('sdk_params')->nullable()->comment = 'SDK的参数';
@@ -41,7 +41,7 @@ class CreateAppTables extends Migration
             $table->bigIncrements('id');
             $table->unsignedInteger('aid')->index()->comment = 'apps id';
             $table->unsignedBigInteger('did')->index()->comment = '设备ID';
-            $table->string('token', 100)->comment = '伴随APP生命周期的token';
+            $table->string('token', 128)->comment = '伴随APP生命周期的token';
             $table->timestamps();
 
             $table->index('created_at');
@@ -167,7 +167,13 @@ class CreateAppTables extends Migration
             $table->unsignedBigInteger('auid')->index()->nullable()->comment = 'app_users id（部分事件为空）';
             $table->nullableMorphs("from");
             $table->longText('value')->nullable()->comment = '上报的正文';
-
+            $table->string('carrier', 20)->nullable()->comment = '运营商';
+            $table->string('connection', 20)->nullable()->comment = 'Wifi/4G/3G/2G/None';
+            $table->string('carrier', 20)->nullable()->comment = '运营商';
+            $table->unsignedBigInteger('app_version_code')->nullable()->comment = 'APP version code';
+            $table->string('app_version', 20)->nullable()->comment = 'APP version';
+            $table->string('sdk_version', 20)->nullable()->comment = 'SDK version';
+            $table->string('geometry')->nullable()->comment = 'SDK version';
             $table->unsignedBigInteger('device_utc')->default(0)->comment = '设备UTC时间戳';
             $table->ipAddress('ip')->nullable()->comment = '登录IP';
 

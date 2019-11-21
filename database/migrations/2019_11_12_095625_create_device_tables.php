@@ -28,8 +28,8 @@ class CreateDeviceTables extends Migration
             $table->string('arch', 32)->nullable()->comment = '平台，比如armeabi-v7a_armeabi';
             $table->string('os', '20')->index()->nullable()->comment = '系统，比如：Android';
             $table->string('os_version', '20')->index()->nullable()->comment = '系统版本 比如：8.0.0';
-            $table->string('mac', 32)->nullable()->comment = 'Wifi MAC';
-            $table->string('bluetooth', 32)->nullable()->comment = 'Wifi MAC';
+            $table->macAddress('mac', 32)->nullable()->comment = 'Wifi MAC';
+            $table->macAddress('bluetooth', 32)->nullable()->comment = 'Wifi MAC';
             $table->string('metrics', 15)->index()->nullable()->comment = '屏幕尺寸，比如：720x1280';
             $table->tinyInt('is_root')->index()->default(0)->comment = '是否Root或越狱';
             $table->tinyInt('is_simulator')->index()->default(0)->comment = '是否模拟器';
