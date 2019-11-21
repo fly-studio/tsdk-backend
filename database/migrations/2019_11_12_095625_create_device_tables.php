@@ -31,7 +31,7 @@ class CreateDeviceTables extends Migration
             $table->macAddress('mac', 32)->nullable()->comment = 'Wifi MAC';
             $table->macAddress('bluetooth', 32)->nullable()->comment = 'Wifi MAC';
             $table->string('metrics', 15)->index()->nullable()->comment = '屏幕尺寸，比如：720x1280';
-            $table->tinyInt('is_root')->index()->default(0)->comment = '是否Root或越狱';
+            $table->tinyInt('is_rooted')->index()->default(0)->comment = '是否Root或越狱';
             $table->tinyInt('is_simulator')->index()->default(0)->comment = '是否模拟器';
 
             $table->timestamp('last_at')->nullable()->index()->comment = '最后活动时间';

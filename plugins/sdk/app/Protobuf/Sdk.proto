@@ -1,0 +1,42 @@
+syntax = "proto3";
+
+package Plugins.Sdk.App.Protobuf;
+
+//设备常量
+message Device {
+	string imei = 10; // Android 4-9 IMEI
+	string udid = 11; // UDID
+	string idfa = 12; // iOS IDFA
+	string oaid = 13; // Android 10 OAID
+	string androidId = 14; // Android ID
+	string serial = 15; // Android 序列号
+	string brand = 16; // 设备品牌
+	string model = 17; // 设备型号
+	string arch = 18; // CPU架构
+	string os = 19; // 设备系统
+	string osVersion = 20; //系统版本
+	string mac = 21; // Wifi MAC
+	string bluetooth = 22; // 蓝牙MAC
+	string metrics = 23; // 设备分辨率
+	bool isRooted = 24; // 是否越狱/Root
+	bool isSimulator = 25; // 是否是模拟器
+}
+
+//属性
+messsge Property {
+	string carrier = 10; // 运营商
+	string connection = 11; // Wifi or 4G
+	uint64 appVersionCode = 12; // App的version code
+	string appVersion = 13; // App的版本
+	string sdkVersion = 14; // Sdk的版本
+	string geometry = 15; // 当前GPS地理位置 用空格分隔
+	uint64 deviceUtc = 16;  // 设备当前UTC时间
+	int32 timeZone = 17; // 设备时区
+}
+
+message Init {
+	string appId = 1; //当前AppId
+	string uuid = 2; // 设备自己生成的UUID
+	Property property = 3;
+	Device device = 4;
+}

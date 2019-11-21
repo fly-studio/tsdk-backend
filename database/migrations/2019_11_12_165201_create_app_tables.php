@@ -35,22 +35,6 @@ class CreateAppTables extends Migration
             $table->index('deleted_at');
         });
 
-        // 冗余表：APP启动表，用于计算激活数据
-        // Token字段贯穿Application的生命周期
-        Schema::create('app_launches', function (Blueprint $table) {
-            $table->bigIncrements('id');
-            $table->unsignedInteger('aid')->index()->comment = 'apps id';
-            $table->unsignedBigInteger('did')->index()->comment = '设备ID';
-            $table->string('token', 128)->comment = '伴随APP生命周期的token';
-            $table->timestamps();
-
-            $table->index('created_at');
-
-            $table->foreign('aid')->references('id')->on('apps')->onDelete('cascade');
-            $table->foreign('did')->references('id')->on('devices')->onDelete('cascade');
-
-        });
-
         // App+用户关系表
         Schema::create('app_users', function (Blueprint $table) {
             $table->bigIncrements('id');
@@ -69,6 +53,23 @@ class CreateAppTables extends Migration
 
         \DB::statement('ALTER TABLE `app_users` ADD `cp_user_binary` VARBINARY(16) after `cp_user_id`;');
         \DB::statement('ALTER TABLE `app_users` ADD INDEX(`cp_user_binary`);');
+
+        // 冗余表：APP启动表，用于计算激活数据
+        // Token字段贯穿Application的生命周期
+        Schema::create('app_launches', function (Blueprint $table) {
+            $table->bigIncrements('id');
+            $table->unsignedInteger('aid')->index()->comment = 'apps id';
+            $table->unsignedBigInteger('did')->index()->comment = '设备ID';
+            $table->string('token', 128)->comment = '伴随APP生命周期的token';
+            $table->timestamp('expired_at')->comment = 'TOKEN过期时间';
+            $table->timestamps();
+
+            $table->index('created_at');
+
+            $table->foreign('aid')->references('id')->on('apps')->onDelete('cascade');
+            $table->foreign('did')->references('id')->on('devices')->onDelete('cascade');
+
+        });
 
         /**
          * 冗余表：用户登录表，用于计算活跃、新增
@@ -166,15 +167,14 @@ class CreateAppTables extends Migration
             $table->unsignedBigInteger('did')->index()->comment = '设备ID';
             $table->unsignedBigInteger('auid')->index()->nullable()->comment = 'app_users id（部分事件为空）';
             $table->nullableMorphs("from");
-            $table->longText('value')->nullable()->comment = '上报的正文';
+            $table->json('value')->nullable()->comment = '上报的正文';
             $table->string('carrier', 20)->nullable()->comment = '运营商';
             $table->string('connection', 20)->nullable()->comment = 'Wifi/4G/3G/2G/None';
-            $table->string('carrier', 20)->nullable()->comment = '运营商';
             $table->unsignedBigInteger('app_version_code')->nullable()->comment = 'APP version code';
             $table->string('app_version', 20)->nullable()->comment = 'APP version';
             $table->string('sdk_version', 20)->nullable()->comment = 'SDK version';
             $table->string('geometry')->nullable()->comment = 'SDK version';
-            $table->unsignedBigInteger('device_utc')->default(0)->comment = '设备UTC时间戳';
+            $table->datetime('device_at')->default(0)->comment = '设备时间W3C格式';
             $table->ipAddress('ip')->nullable()->comment = '登录IP';
 
             $table->timestamps();

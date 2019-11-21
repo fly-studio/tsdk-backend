@@ -87,7 +87,7 @@ class DeviceRepository extends Repository {
 
 	public function updateDevice(string $uuid, array $inputs)
 	{
-		$fields = [/*机器码*/'imei', 'udid', 'idfa', 'oaid', 'android_id', 'serial', /*机器配置*/'brand', 'model', 'arch', 'os', 'os_version', 'mac', 'bluetooth', 'metrics', 'is_root', 'is_simulator'];
+		//$fields = [/*机器码*/'imei', 'udid', 'idfa', 'oaid', 'android_id', 'serial', /*机器配置*/'brand', 'model', 'arch', 'os', 'os_version', 'mac', 'bluetooth', 'metrics', 'is_root', 'is_simulator'];
 
 		$device = null;
 
@@ -98,11 +98,11 @@ class DeviceRepository extends Repository {
 		}
 
 		// remove blank value
-		$fields = array_filter($fields, function($field) use($uuid, $inputs) {
-			return !empty($inputs[$field]);
+		$fields = array_filter($inputs, function($value) {
+			return !empty($value);
 		});
 
-		return $this->updateOrCreate(!empty($device) ? $device['uuid'] : $uuid, Arr::only($inputs, $fields));
+		return $this->updateOrCreate(!empty($device) ? $device['uuid'] : $uuid, $fields);
 	}
 
 	public function updateOrCreate(string $uuid, array $deviceInfo)

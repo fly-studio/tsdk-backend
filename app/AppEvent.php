@@ -8,6 +8,7 @@ class AppEvent extends Model
 {
 	protected $casts = [
 		'event_type' => 'catalog',
+		'value' => 'array',
 	];
 
 	public function device()

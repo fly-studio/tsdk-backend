@@ -6,6 +6,8 @@ use App\Model;
 
 class AppLaunch extends Model
 {
+	protected $dates = ['expired_at'];
+
 	public function device()
 	{
 		return $this->hasOne('App\\Device', 'id', 'did');
