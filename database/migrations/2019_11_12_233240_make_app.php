@@ -43,6 +43,7 @@ class MakeApp extends Migration
                 ],
                 'event_type' => [
                     'launch|启动APP(onCreate)' => [],
+                    'supplement|补充数据' => [],
                     'pause|APP被暂停(onPause)' => [],
                     'resume|APP被恢复(onResume)' => [],
                     'tick|定时上报' => [],

@@ -10,6 +10,7 @@ use Addons\Core\Contracts\Repository;
 use Illuminate\Database\Eloquent\Model;
 
 use App\Device;
+use App\AppDevice;
 
 class DeviceRepository extends Repository {
 
@@ -25,12 +26,17 @@ class DeviceRepository extends Repository {
 		return Device::with([])->find($id, $columns);
 	}
 
-	public function findByDeviceId(string $type, string $value)
+	public function findByDeviceId(array $deviceInfo)
 	{
-		if (!in_array($type, static::TRUSTED_DEVICE_ID) || empty($value))
-			return null;
+		foreach(static::TRUSTED_DEVICE_ID as $type)
+		{
+			if (!empty($deviceInfo[$type]) &&
+				!empty($device = Device::where($type, $deviceInfo[$type])->where('model', $deviceInfo['model'])->where('brand', $deviceInfo['brand'])->first())
+			)
+				return $device;
+		}
 
-		return Device::where($type, $value)->first();
+		return null;
 	}
 
 	public function findOrFail($id, array $columns = ['*'])
@@ -85,30 +91,54 @@ class DeviceRepository extends Repository {
 		return $data;
 	}
 
-	public function updateDevice(string $uuid, array $inputs)
+	public function isEmptyTrustedDeviceId(array $deviceInfo)
 	{
-		//$fields = [/*机器码*/'imei', 'udid', 'idfa', 'oaid', 'android_id', 'serial', /*机器配置*/'brand', 'model', 'arch', 'os', 'os_version', 'mac', 'bluetooth', 'metrics', 'is_root', 'is_simulator'];
-
-		$device = null;
-
-		foreach(static::TRUSTED_DEVICE_ID as $type)
-		{
-			if (!empty($inputs[$type]) && !empty($device = $this->findByDeviceId($type, $inputs[$type])))
-				break;
+		foreach (static::TRUSTED_DEVICE_ID as $type) {
+			if (!empty($deviceInfo[$type]))
+				return false;
 		}
 
+		return true;
+	}
+
+	/**
+	 * 将uuid和appid进行关联
+	 * 新建或者读取
+	 *
+	 * @param  string $app_id
+	 * @param  string $uuid
+	 * @return [type]
+	 */
+	public function attachUuid(string $app_id, string $uuid)
+	{
+		return AppDevice::firstOrCreate(compact('app_id', 'uuid'));
+	}
+
+	/**
+	 * 存储设备信息
+	 * 仅仅当TRUSTED_DEVICE_ID存在任一项时，方会新建或更新
+	 *
+	 * @param  array  $deviceInfo 设备的常量
+	 * @return [type]
+	 */
+	public function updateDevice(array $deviceInfo)
+	{
+		//$fields = [/*机器码*/'imei', 'idfa', 'oaid', 'android_id', 'serial', /*机器配置*/'brand', 'model', 'arch', 'os', 'os_version', 'mac', 'bluetooth', 'metrics', 'is_root', 'is_simulator'];
+
+		if ($this->isEmptyTrustedDeviceId($deviceInfo))
+			return null;
+
+		$device = $this->findByDeviceId($deviceInfo);
+
 		// remove blank value
-		$fields = array_filter($inputs, function($value) {
+		$data = array_filter($deviceInfo, function($value) {
 			return !empty($value);
 		});
 
-		return $this->updateOrCreate(!empty($device) ? $device['uuid'] : $uuid, $fields);
+		if (empty($data))
+			return $device;
+
+		return !empty($device) ? $this->update($device, $data) : $this->store($data);
 	}
 
-	public function updateOrCreate(string $uuid, array $deviceInfo)
-	{
-		return DB::transaction(function() use ($uuid, $deviceInfo) {
-			return Device::updateOrCreate(['uuid' => $uuid], $deviceInfo);
-		});
-	}
 }

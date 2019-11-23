@@ -18,18 +18,18 @@ class AppLaunchRepository extends Repository {
 
 	public function find($id, array $columns = ['*'])
 	{
-		return AppLaunch::with([])->find($id, $columns);
+		return AppLaunch::with(['app_device', 'app'])->find($id, $columns);
 	}
 
 	public function findOrFail($id, array $columns = ['*'])
 	{
-		return AppLaunch::with([])->findOrFail($id, $columns);
+		return AppLaunch::with(['app_device', 'app'])->findOrFail($id, $columns);
 	}
 
-	public function launch(int $aid, int $did, string $sdk_version)
+	public function launch(int $aid, int $did)
 	{
 		$token = base64(random_bytes(128));
-		return $this->store(compact('aid', 'did', 'sdk_version', 'token'));
+		return $this->store(compact('aid', 'did', 'token'));
 	}
 
 	public function store(array $data)

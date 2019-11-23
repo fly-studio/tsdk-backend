@@ -16,7 +16,6 @@ return [
 
 	],
 	'routeMiddleware' => [
-		'check-sign' => \Plugins\Sdk\App\Http\Middleware\CheckSign::class,
 	],
 	'injectViews' => [
 	],
