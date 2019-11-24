@@ -16,12 +16,13 @@ class CreateAppRelationTables extends Migration
         // APP Device 的关系表
         Schema::create('app_devices', function (Blueprint $table) {
             $table->bigIncrements('id');
-            $table->string('uuid', 64)->unique()->comment = '由android生成的uuid，设备上每个应用不同，卸载重装也会改变';
+            $table->string('uuid', 32)->index()->comment = '由android生成的uuid，设备上每个应用不同，卸载重装也会改变';
             $table->unsignedInteger('aid')->index()->comment = 'apps id';
             $table->unsignedBigInteger('did')->nullable()->index()->comment = '真正的设备ID，可能为空';
 
             $table->timestamps();
             $table->index('created_at');
+            $table->unique(['uuid', 'aid']);
             $table->foreign('aid')->references('id')->on('apps')->onDelete('cascade');
             $table->foreign('did')->references('id')->on('devices')->onDelete('cascade');
         });
