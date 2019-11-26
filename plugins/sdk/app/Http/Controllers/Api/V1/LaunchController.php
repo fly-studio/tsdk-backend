@@ -1,20 +1,21 @@
 <?php
 
-namespace Plugins\Sdk\App\Http\Controllers;
+namespace Plugins\Sdk\App\Http\Controllers\Api\V1;
 
 use Event;
 use Illuminate\Support\Arr;
 use Illuminate\Http\Request;
 use App\Http\Controllers\Controller;
-use Plugins\Sdk\App\Http\Controllers\CommonTrait;
+use Plugins\Sdk\App\Http\Controllers\CensorTrait;
 use Addons\Core\Exceptions\OutputResponseException;
 
 use App\AppDevice;
 use App\Repositories\DeviceRepository;
+use App\Repositories\AppLaunchRepository;
 
 class LaunchController extends Controller
 {
-	use CommonTrait;
+	use CensorTrait;
 
 	private $deviceRepo;
 
@@ -35,16 +36,17 @@ class LaunchController extends Controller
 	 */
 	public function index(Request $request, AppLaunchRepository $appLaunchRepo)
 	{
-		$data = $this->censor($request, 'sdk::launch.fields', ['app_id', 'uuid', 'device']);
+		$data = $this->censor($request, 'sdk::launch.fields', ['app_id', 'uuid']);
 
+		$device = $this->censorDevice($request);
 		$property = $this->censorProperty($request);
 
-		$app = $this->censorApp($data['app_id']);
+		$app = $this->censorApp($request, $data['app_id']);
 
 		//关联UUID+APPID
-		$appDevice = $this->deviceRepo->attachUuid($app->getKey(), $data['uuid']);
+		$appDevice = $this->deviceRepo->bindUuid($app->getKey(), $data['uuid']);
 
-		$this->attachDevice($appDevice, $data['device']);
+		$this->attachDevice($appDevice, $device);
 
 		// 添加启动记录
 		$appLaunch = $appLaunchRepo->launch($app->getKey(), $appDevice->getKey());
@@ -65,11 +67,10 @@ class LaunchController extends Controller
 	{
 		$appLaunch = $this->censorAppLaunch($request);
 
+		$device = $this->censorDevice($request);
 		$property = $this->censorProperty($request);
 
-		$data = $this->censor($request, 'sdk::launch.fields', ['device']);
-
-		$this->attachDevice($appLaunch->app_device, $data['device']);
+		$this->attachDevice($appLaunch->app_device, $device);
 
 		(new SdkEvent($appLaunch, $property))->from($appLaunch)->handle('supplement');
 

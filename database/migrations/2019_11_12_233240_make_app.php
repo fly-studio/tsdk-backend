@@ -41,7 +41,7 @@ class MakeApp extends Migration
                     'facebook|FaceBook' => [],
                     'google|Google' => [],
                 ],
-                'event_type' => [
+                'event_type|APP事件' => [
                     'launch|启动APP(onCreate)' => [],
                     'supplement|补充数据' => [],
                     'pause|APP被暂停(onPause)' => [],

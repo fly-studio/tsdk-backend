@@ -5,7 +5,7 @@ return [
 	'register' => [
 		'view' => true,
 		'migrate' => true,
-		'translator' => false,
+		'translator' => true,
 		'router' => true,
 		'censor' => true,
 	],

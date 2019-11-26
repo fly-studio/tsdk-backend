@@ -168,8 +168,8 @@ class CreateAppRelationTables extends Migration
             $table->unsignedBigInteger('app_version_code')->nullable()->comment = 'APP version code';
             $table->string('app_version', 20)->nullable()->comment = 'APP version';
             $table->string('sdk_version', 20)->nullable()->comment = 'SDK version';
-            $table->string('geometry')->nullable()->comment = 'SDK version';
-            $table->datetime('device_at')->default(0)->comment = '设备时间W3C格式';
+            $table->string('geometry')->nullable()->comment = '地理位置';
+            $table->datetime('device_at')->nullable()->comment = '设备W3C时间';
             $table->ipAddress('ip')->nullable()->comment = '登录IP';
 
             $table->timestamps();

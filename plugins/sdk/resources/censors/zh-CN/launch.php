@@ -8,12 +8,7 @@ return [
 		],
 		'uuid' => [
 			'name' => '设备唯一码',
-			'rules' => 'required|string|size:32',
+			'rules' => 'required|uuid',
 		],
-		'device' => [
-			'name' => '设备常量',
-			'rules' => 'required|array',
-		],
-
 	],
 ];
