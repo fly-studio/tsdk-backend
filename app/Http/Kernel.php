@@ -65,7 +65,6 @@ class Kernel extends HttpKernel
         'scopes' => \Laravel\Passport\Http\Middleware\CheckScopes::class,
         'scope' => \Laravel\Passport\Http\Middleware\CheckForAnyScope::class,
         'client' => \Laravel\Passport\Http\Middleware\CheckClientCredentials::class,
-        'sign' => \App\Http\Middleware\CheckSign::class,
     ];
     
     /**
