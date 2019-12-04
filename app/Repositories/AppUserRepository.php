@@ -7,50 +7,46 @@ use Illuminate\Http\Request;
 use Addons\Core\Contracts\Repository;
 use Illuminate\Database\Eloquent\Model;
 
-use App\Catalog;
+use App\User;
 use App\AppUser;
-use App\AppEvent;
 use App\AppLaunch;
 
-class AppEventRepository extends Repository {
+class AppUserRepository extends Repository {
 
 	public function prePage()
 	{
-		return config('size.models.'.(new AppEvent)->getTable(), config('size.common'));
+		return config('size.models.'.(new AppUser)->getTable(), config('size.common'));
 	}
 
 	public function find($id, array $columns = ['*'])
 	{
-		return AppEvent::with([])->find($id, $columns);
+		return AppUser::with([])->find($id, $columns);
 	}
 
 	public function findOrFail($id, array $columns = ['*'])
 	{
-		return AppEvent::with([])->findOrFail($id, $columns);
+		return AppUser::with([])->findOrFail($id, $columns);
 	}
 
-	public function handle(Catalog $event_type, AppLaunch $appLaunch, array $property, ?array $value, ?AppUser $appUser, ?Model $from)
+	public function bindUser(AppLaunch $appLaunch, User $user)
 	{
-		$event = $this->store([
-				'event_type' => $event_type->id,
+		return DB::transaction(function() use ($appLaunch, $user) {
+
+			return AppUser::firstOrCreate([
 				'aid' => $appLaunch->aid,
+				'uid' => $user->getKey(),
+			],[
+				'alid' => $appLaunch->getKey(),
 				'adid' => $appLaunch->adid,
-				'auid' => !empty($appUser) ? $appUser->getKey() : null,
-				'value' => $value,
-				'ip' => app('request')->ip()
-			] + $property
-		);
+			]);
 
-		if (!empty($from))
-			$event->table()->attach($from);
-
-		return $event;
+		});
 	}
 
 	public function store(array $data)
 	{
 		return DB::transaction(function() use ($data) {
-			$model = AppEvent::create($data);
+			$model = AppUser::create($data);
 			return $model;
 		});
 	}
@@ -66,13 +62,13 @@ class AppEventRepository extends Repository {
 	public function destroy(array $ids)
 	{
 		DB::transaction(function() use ($ids) {
-			AppEvent::destroy($ids);
+			AppUser::destroy($ids);
 		});
 	}
 
 	public function data(Request $request, callable $callback = null, array $columns = ['*'])
 	{
-		$model = new AppEvent;
+		$model = new AppUser;
 		$builder = $model->newQuery()->with([]);
 
 		$total = $this->_getCount($request, $builder, false);
@@ -85,7 +81,7 @@ class AppEventRepository extends Repository {
 
 	public function export(Request $request, callable $callback = null, array $columns = ['*'])
 	{
-		$model = new AppEvent;
+		$model = new AppUser;
 		$builder = $model->newQuery()->with([]);
 		$size = $request->input('size') ?: config('size.export', 1000);
 
