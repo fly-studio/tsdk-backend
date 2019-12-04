@@ -94,7 +94,7 @@ class CreateAppRelationTables extends Migration
          */
         Schema::create('app_orders', function (Blueprint $table) {
             $table->bigIncrements('id');
-            $table->string('order_no', 50)->index()->comment = '订单号';
+            $table->string('order_no', 30)->index()->comment = '订单号';
 
             $table->unsignedBigInteger('auid')->index()->comment = 'apps id(冗余)';
             $table->unsignedBigInteger('alid')->index()->comment = 'app_launches id';

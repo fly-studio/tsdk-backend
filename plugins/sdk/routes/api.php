@@ -28,6 +28,7 @@ $router->api('v1', function($router) {
 		$router->post('pay', 'PurchaseController@pay');
 		$router->post('paid', 'PurchaseController@paid');
 		$router->post('cancel_pay', 'PurchaseController@cancel_pay');
+		$router->post('callback/{channel}', 'PurchaseController@callback');
 	});
 
 });

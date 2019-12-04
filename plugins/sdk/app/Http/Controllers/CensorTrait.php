@@ -9,6 +9,7 @@ use App\AppLaunch;
 use App\Repositories\AppRepository;
 use App\Repositories\UserRepository;
 use App\Repositories\AppUserRepository;
+use App\Repositories\AppOrderRepository;
 use App\Repositories\AppLaunchRepository;
 
 trait CensorTrait {
@@ -63,19 +64,37 @@ trait CensorTrait {
 
 	protected function censorUser(Request $request)
 	{
-		$data = $this->censor($request, 'sdk::user.verify', ['uid', 'auid']);
+		$uid = $request->uid;
+		$auid = $request->auid;
 
-		$user = (new AppRepository)->find($data['uid']);
+		if (empty($uid) || empty($auid))
+			$this->throwCensorException($request, 'sdk::user.empty_user', 4010);
 
-		$appUser = (new AppUserRepository)->find($data['auid']);
+		$user = (new UserRepository)->find($uid);
+		$appUser = (new AppUserRepository)->find($auid);
 
 		if (empty($user) || empty($appUser))
-			$this->throwCensorException($request, 'sdk::user.empty_user', 4006);
+			$this->throwCensorException($request, 'sdk::user.empty_user', 4011);
 
 		if ($user->getKey() != $appUser->uid)
-			$this->throwCensorException($request, 'sdk::user.appUser_bind_invalid', 4007);
+			$this->throwCensorException($request, 'sdk::user.appUser_bind_invalid', 4012);
 
 		return [$user, $appUser];
+	}
+
+	protected function censorOrder(Request $request)
+	{
+		$oid = $request->oid;
+
+		if (empty($oid))
+			$this->throwCensorException($request, 'sdk::purchase.empty_orderr', 4020);
+
+		$order = (new AppOrderRepository)->find($oid);
+
+		if (empty($order))
+			$this->throwCensorException($request, 'sdk::purchase.empty_orderr', 4021);
+
+		return $order;
 	}
 
 	private function throwCensorException(Request $request, string $message, int $code)

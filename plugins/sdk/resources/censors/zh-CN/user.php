@@ -10,8 +10,6 @@ return [
 			'name' => '密码',
 			'rules' => 'required|min:6|max:32',
 		],
-	],
-	'verify' => [
 		'uid' => [
 			'name' => 'User ID',
 			'rules' => 'required|numeric',
@@ -20,6 +18,8 @@ return [
 			'name' => 'App User ID',
 			'rules' => 'required|numeric',
 		],
+	],
+	'verify' => [
 		'at' => [
 			'name' => '时间戳',
 			'rules' => 'required|numeric',

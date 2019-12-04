@@ -2,11 +2,11 @@
 
 namespace Plugins\Sdk\App\Http\Controllers\Api\V1;
 
-use Event;
 use Illuminate\Support\Arr;
 use Illuminate\Http\Request;
 use Plugins\Sdk\App\Events\SdkEvent;
 use App\Http\Controllers\Controller;
+use Plugins\Sdk\App\Http\Controllers\LogTrait;
 use Plugins\Sdk\App\Http\Controllers\CensorTrait;
 
 use App\User;
@@ -19,7 +19,7 @@ use App\Repositories\AppLaunchRepository;
 
 class UserController extends Controller
 {
-	use CensorTrait;
+	use CensorTrait, LogTrait;
 
 	protected $userRepo;
 	protected $appUserRepo;
@@ -30,6 +30,12 @@ class UserController extends Controller
 		$this->appUserRepo = new AppUserRepository;
 	}
 
+	/**
+	 * 提交账密来注册
+	 *
+	 * @param  Request $request
+	 * @return Response
+	 */
 	public function register(Request $request)
 	{
 		$appLaunch = $this->censorAppLaunch($request);
@@ -39,7 +45,7 @@ class UserController extends Controller
 		$user = $this->userRepo->findByUsername($data['username']);
 
 		if (!empty($user))
-			return $this->error('sdk::user.username_registered')->code(4008);
+			return $this->error('sdk::user.username_registered')->code(4013);
 
 		// 注册
 		$user = $this->userRepo->store($data, 'user');
@@ -50,12 +56,18 @@ class UserController extends Controller
 		(new SdkEvent($appLaunch, $property))
 			->from($appUser)
 			->appUser($appUser)
-			->value($data + ['user' => $user->toArray(), 'appUser' => $appUser->toArray()])
+			->value($data)
 			->handle('register');
 
 		return $this->success('sdk::user.success_registered')->data(['uid' => $user->getKey(), 'auid' => $appUser->getKey(), 'username' => $user->username]);
 	}
 
+	/**
+	 * 提交账密来登录
+	 *
+	 * @param  Request $request
+	 * @return Response
+	 */
 	public function login(Request $request)
 	{
 		$appLaunch = $this->censorAppLaunch($request);
@@ -68,7 +80,7 @@ class UserController extends Controller
 		$appUser = $this->appUserRepo->bindUser($appLaunch, $user);
 
 		if (empty($user))
-			return $this->error('sdk::user.error_login')->code(4009);
+			return $this->error('sdk::user.error_login')->code(4014);
 
 		// 添加登录记录，此表是计算新增、留存的关键表
 		$appLogin = (new AppLoginRepository)->login($appLaunch, $appUser);
@@ -76,7 +88,7 @@ class UserController extends Controller
 		(new SdkEvent($appLaunch, $property))
 			->from($appLogin)
 			->appUser($appUser)
-			->value($data + ['uid' => $user->getKey(), 'auid' => $appUser->getKey()])
+			->value($data)
 			->handle('login');
 
 		$at = time();
@@ -90,6 +102,12 @@ class UserController extends Controller
 		]);
 	}
 
+	/**
+	 * 登录验签
+	 *
+	 * @param  Request $request
+	 * @return Response
+	 */
 	public function verify(Request $request)
 	{
 		$appLaunch = $this->censorAppLaunch($request);
@@ -99,20 +117,28 @@ class UserController extends Controller
 
 		$data = $this->censor($request, 'sdk::user.verify', ['at', 'sign']);
 
+		// Sign是否过期
 		if ($data['at'] < time() - 300)
-			return $this->error('sdk::user.sign_timeout')->code(4010);
+			return $this->error('sdk::user.sign_timeout')->code(4015);
 
+		// 检查Sign
 		if (strcasecmp($data['sign'], $this->getSign($user, $appUser, $data['at'])) != 0)
-			return $this->error('sdk::user.sign_invalid')->code(4011);
+			return $this->error('sdk::user.sign_invalid')->code(4016);
 
 		(new SdkEvent($appLaunch, $property))
 			->appUser($appUser)
-			->value($data + ['uid' => $user->getKey(), 'auid' => $appUser->getKey()])
+			->value($data)
 			->handle('verify');
 
 		return $this->success('sdk::user.sign_correct');
 	}
 
+	/**
+	 * 快速注册获取用户名
+	 *
+	 * @param  Request $request
+	 * @return Response
+	 */
 	public function generate_username(Request $request)
 	{
 		$appLaunch = $this->censorAppLaunch($request);
@@ -131,6 +157,13 @@ class UserController extends Controller
 		return $this->api(['username' => $username]);
 	}
 
+	/**
+	 * 登出
+	 * 仅用于event
+	 *
+	 * @param  Request $request
+	 * @return Response
+	 */
 	public function logout(Request $request)
 	{
 		$appLaunch = $this->censorAppLaunch($request);
@@ -140,12 +173,19 @@ class UserController extends Controller
 
 		(new SdkEvent($appLaunch, $property))
 			->appUser($appUser)
-			->value(['uid' => $user->getKey(), 'auid' => $appUser->getKey()])
 			->handle('logout');
 
 		return $this->success();
 	}
 
+	/**
+	 * 登录验签算法
+	 *
+	 * @param  User    $user
+	 * @param  AppUser $appUser
+	 * @param  int     $at
+	 * @return string
+	 */
 	private function getSign(User $user, AppUser $appUser, int $at)
 	{
 		$salt = $user->password;

@@ -34,9 +34,20 @@ messsge Property {
 	int32 timeZone = 17; // 设备时区
 }
 
-message Init {
+message Launch {
 	string appId = 1; //当前AppId
 	string uuid = 2; // 设备自己生成的UUID
 	Property property = 3;
 	Device device = 4;
+}
+
+message Start {
+	string lid = 1; //AppLaunch ID
+	Property property = 2;
+	Device device = 3;
+}
+
+message Tick {
+	string lid = 1; //AppLaunch ID
+	Property property = 2;
 }

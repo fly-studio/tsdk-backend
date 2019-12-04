@@ -8,6 +8,7 @@ return [
 		'translator' => true,
 		'router' => true,
 		'censor' => true,
+		'event' => true,
 	],
 	'commands' => [
 
