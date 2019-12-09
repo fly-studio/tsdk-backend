@@ -3,6 +3,7 @@
 namespace App\Repositories;
 
 use DB;
+use Carbon\Carbon;
 use Illuminate\Http\Request;
 use Addons\Core\Contracts\Repository;
 use Illuminate\Database\Eloquent\Model;
@@ -31,13 +32,18 @@ class AppEventRepository extends Repository {
 
 	public function handle(Catalog $event_type, AppLaunch $appLaunch, array $property, ?array $value, ?AppUser $appUser, ?Model $from)
 	{
+		$deviceAt = new Carbon($property['device_at']);
+		unset($property['device_at']);
+
 		$event = $this->store([
 				'event_type' => $event_type->id,
 				'aid' => $appLaunch->aid,
 				'adid' => $appLaunch->adid,
 				'auid' => !empty($appUser) ? $appUser->getKey() : null,
 				'value' => $value,
-				'ip' => app('request')->ip()
+				'ip' => app('request')->ip(),
+				'device_at' => $deviceAt->getPreciseTimestamp(3), // ms timestamp
+				'device_zone' => $deviceAt->format('Z'), // 时差偏移量的秒数。UTC 西边的时区偏移量总是负的，UTC 东边的时区偏移量总是正的。
 			] + $property
 		);
 

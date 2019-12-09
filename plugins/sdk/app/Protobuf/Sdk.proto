@@ -30,8 +30,7 @@ messsge Property {
 	string appVersion = 13; // App的版本
 	string sdkVersion = 14; // Sdk的版本
 	string geometry = 15; // 当前GPS地理位置 用空格分隔
-	uint64 deviceUtc = 16;  // 设备当前UTC时间
-	int32 timeZone = 17; // 设备时区
+	string deviceAt = 16;  // 设备当前W3C时间
 }
 
 message Launch {

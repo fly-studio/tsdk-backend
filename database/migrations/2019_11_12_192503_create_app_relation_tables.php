@@ -173,14 +173,15 @@ class CreateAppRelationTables extends Migration
             $table->unsignedBigInteger('adid')->index()->comment = 'app_devices ID';
             $table->unsignedBigInteger('auid')->index()->nullable()->comment = 'app_users id（部分事件为空）';
             $table->nullableMorphs("from");
-            $table->json('value')->nullable()->comment = '上报的正文';
+            $table->json('value')->nullable()->comment = '上报的其它参数';
             $table->string('carrier', 20)->nullable()->comment = '运营商';
             $table->string('connection', 20)->nullable()->comment = 'Wifi/4G/3G/2G/None';
             $table->unsignedBigInteger('app_version_code')->nullable()->comment = 'APP version code';
             $table->string('app_version', 20)->nullable()->comment = 'APP version';
             $table->string('sdk_version', 20)->nullable()->comment = 'SDK version';
             $table->string('geometry')->nullable()->comment = '地理位置';
-            $table->datetime('device_at')->nullable()->comment = '设备W3C时间';
+            $table->unsignedBigInteger('device_at')->nullable()->comment = '设备时间戳ms';
+            $table->integer('device_zone')->default(0)->comment = '设备时区';
             $table->ipAddress('ip')->nullable()->comment = '登录IP';
 
             $table->timestamps();
