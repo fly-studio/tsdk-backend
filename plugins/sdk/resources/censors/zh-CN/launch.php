@@ -10,5 +10,9 @@ return [
 			'name' => '设备唯一码',
 			'rules' => 'required|uuid',
 		],
+		'sub_channel' => [
+			'name' => '子渠道',
+			'rules' => 'required|numeric',
+		],
 	],
 ];

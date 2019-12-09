@@ -37,8 +37,9 @@ class CreateAppRelationTables extends Migration
             $table->unsignedInteger('aid')->index()->comment = 'apps id';
             $table->unsignedBigInteger('adid')->index()->comment = 'app_devices ID';
             $table->unsignedBigInteger('sub_channel')->index()->comment = '渠道 ID';
-            $table->string('token', 128)->comment = '伴随APP生命周期的token';
-            $table->timestamp('expired_at')->comment = 'TOKEN过期时间';
+            $table->text('private_key')->comment = 'Private Key';
+            $table->text('public_key')->comment = 'Public Key';
+            $table->timestamp('expired_at')->comment = 'RSA过期时间';
             $table->timestamps();
 
             $table->index('created_at');

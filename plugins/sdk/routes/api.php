@@ -6,7 +6,7 @@ $router->api('v1', function($router) {
 		/**
 		 * APP
 		 */
-		$router->post('launch', 'AppController@index');
+		$router->post('launch', 'AppController@launch');
 		$router->post('start', 'AppController@start');
 		$router->post('pause', 'AppController@pause');
 		$router->post('exception', 'AppController@exception');

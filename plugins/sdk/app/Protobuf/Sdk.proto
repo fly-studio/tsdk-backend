@@ -36,7 +36,7 @@ messsge Property {
 message Launch {
 	int64 appId = 1; // 当前AppId
 	string uuid = 2; // 设备自己生成的UUID
-	int64 channel = 3; // 渠道号
+	int64 subChannel = 3; // 子渠道
 	Property property = 3;
 	Device device = 4;
 }

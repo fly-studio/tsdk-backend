@@ -2,6 +2,7 @@
 
 namespace Plugins\Sdk\App\Http\Controllers;
 
+use Carbon\Carbon;
 use Illuminate\Http\Request;
 use Addons\Core\Exceptions\OutputResponseException;
 
@@ -14,6 +15,10 @@ use App\Repositories\AppLaunchRepository;
 
 trait CensorTrait {
 
+	protected $appLaunch;
+	protected $user;
+	protected $appUser;
+
 	protected function censorAppLaunch(Request $request)
 	{
 		$alid = $request->query('alid');
@@ -21,13 +26,16 @@ trait CensorTrait {
 		if (empty($alid))
 			$this->throwCensorException($request, 'sdk::app.lose_appLaunch', 4001);
 
-		$appLaunch = (new AppLaunchRepository)->find($alid);
+		$this->appLaunch = $appLaunch = (new AppLaunchRepository)->find($alid);
 
 		if (empty($appLaunch))
 			$this->throwCensorException($request, 'sdk::app.lose_appLaunch', 4002);
 
+		if ($appLaunch->expired_at->lt(Carbon::now()))
+			$this->throwCensorException($request, 'sdk::app.appLaunch_expired', 4003);
+
 		if (empty($appLaunch->app))
-			$this->throwCensorException($request, 'sdk::app.lose_app', 4003);
+			$this->throwCensorException($request, 'sdk::app.lose_app', 4004);
 
 		return $appLaunch;
 	}
@@ -37,7 +45,7 @@ trait CensorTrait {
 		$app = (new AppRepository)->find($app_id);
 
 		if (empty($app))
-			$this->throwCensorException($request, 'sdk::app.lose_app', 4003);
+			$this->throwCensorException($request, 'sdk::app.lose_app', 4004);
 
 		return $app;
 	}
@@ -45,7 +53,7 @@ trait CensorTrait {
 	protected function censorDevice(Request $request)
 	{
 		if (!is_array($request->device))
-			$this->throwCensorException($request, 'sdk::app.lose_device', 4004);
+			$this->throwCensorException($request, 'sdk::app.lose_device', 4005);
 
 		$data = $this->censor($request->device, 'sdk::device.fields', ['*']);
 
@@ -55,7 +63,7 @@ trait CensorTrait {
 	protected function censorProperty(Request $request)
 	{
 		if (!is_array($request->property))
-			$this->throwCensorException($request, 'sdk::app.lose_device', 4005);
+			$this->throwCensorException($request, 'sdk::app.lose_device', 4006);
 
 		$data = $this->censor($request->property, 'sdk::property.fields', ['*']);
 
@@ -70,8 +78,8 @@ trait CensorTrait {
 		if (empty($uid) || empty($auid))
 			$this->throwCensorException($request, 'sdk::user.empty_user', 4010);
 
-		$user = (new UserRepository)->find($uid);
-		$appUser = (new AppUserRepository)->find($auid);
+		$this->user = $user = (new UserRepository)->find($uid);
+		$this->appUser = $appUser = (new AppUserRepository)->find($auid);
 
 		if (empty($user) || empty($appUser))
 			$this->throwCensorException($request, 'sdk::user.empty_user', 4011);
@@ -102,5 +110,16 @@ trait CensorTrait {
 		throw (new OutputResponseException($message))
 			->request($request)
 			->code($code);
+	}
+
+	public function api($data, $encrypted = false, string $rsaType = 'public')
+	{
+		if (!empty($this->appLaunch))
+		{
+			$encrypted = $this->appLaunch->private_key;
+			$rsaType = 'private';
+		}
+
+		return app(ResponseFactory::class)->make('api', $data, $encrypted, $rsaType);
 	}
 }

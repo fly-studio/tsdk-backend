@@ -37,9 +37,9 @@ class AppController extends Controller
 	 * @param  Request   $request
 	 * @return Response
 	 */
-	public function index(Request $request, AppLaunchRepository $appLaunchRepo)
+	public function launch(Request $request, AppLaunchRepository $appLaunchRepo)
 	{
-		$data = $this->censor($request, 'sdk::launch.fields', ['app_id', 'uuid']);
+		$data = $this->censor($request, 'sdk::launch.fields', ['app_id', 'uuid', 'sub_channel']);
 
 		$device = $this->censorDevice($request);
 		$property = $this->censorProperty($request);
@@ -60,7 +60,12 @@ class AppController extends Controller
 			->from($appLaunch)
 			->handle('launch');
 
-		return $this->returnApi($appLaunch);
+		return $this->api([
+			'need_device_id' => empty($appDevice->did),
+			'alid' => $appLaunch->getKey(),
+			'expired_at' => $appLaunch->expired_at->getTimestamp(),
+			'public_key' => $appLaunch->public_key
+		]);
 	}
 
 	/**
@@ -83,7 +88,9 @@ class AppController extends Controller
 			->value(compact('device'))
 			->handle('start');
 
-		return $this->returnApi($appLaunch);
+		return $this->api([
+			'need_device_id' => empty($appLaunch->app_device->did),
+		]);
 	}
 
 	/**
@@ -159,21 +166,6 @@ class AppController extends Controller
 			->handle('crash');
 
 		return $this->success();
-	}
-
-	/**
-	 * launch/start 返回的response
-	 * @param  AppLaunch $appLaunch
-	 * @return Response
-	 */
-	private function returnApi(AppLaunch $appLaunch)
-	{
-		return $this->api([
-			'needDeviceId' => empty($appLaunch->app_device->did),
-			'alid' => $appLaunch->getKey(),
-			'expired_at' => $appLaunch->expired_at->toW3cString(),
-			'token' => $appLaunch->token
-		]);
 	}
 
 	/**

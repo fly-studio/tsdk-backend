@@ -3,6 +3,8 @@
 namespace App\Repositories;
 
 use DB;
+use Carbon\Carbon;
+use phpseclib\Crypt\RSA;
 use Illuminate\Http\Request;
 use Addons\Core\Contracts\Repository;
 use Illuminate\Database\Eloquent\Model;
@@ -26,10 +28,15 @@ class AppLaunchRepository extends Repository {
 		return AppLaunch::with(['app_device', 'app'])->findOrFail($id, $columns);
 	}
 
-	public function launch(int $aid, int $did)
+	public function launch(int $aid, int $did, int $sub_channel)
 	{
-		$token = base64(random_bytes(128));
-		return $this->store(compact('aid', 'did', 'token'));
+		$rsa = new RSA();
+		$rsaKeys = $rsa->createKey(1024);
+		$public_key = $rsaKeys['publickey'];
+		$private_key = $rsaKeys['privatekey'];
+		$expired_at = Carbon::now()->addDays(7);
+
+		return $this->store(compact('aid', 'did', 'sub_channel', 'public_key', 'private_key', 'expired_at'));
 	}
 
 	public function store(array $data)
