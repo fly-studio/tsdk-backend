@@ -4,33 +4,37 @@ package Plugins.Sdk.App.Protobuf;
 
 //设备常量
 message Device {
-	string imei = 10; // Android 4-9 IMEI
-	string udid = 11; // UDID
-	string idfa = 12; // iOS IDFA
-	string oaid = 13; // Android 10 OAID
-	string androidId = 14; // Android ID
-	string serial = 15; // Android 序列号
-	string brand = 16; // 设备品牌
-	string model = 17; // 设备型号
-	string arch = 18; // CPU架构
-	string os = 19; // 设备系统
-	string osVersion = 20; //系统版本
-	string mac = 21; // Wifi MAC
-	string bluetooth = 22; // 蓝牙MAC
-	string metrics = 23; // 设备分辨率
-	bool isRooted = 24; // 是否越狱/Root
-	bool isSimulator = 25; // 是否是模拟器
+	string imei = 1; // Android 4-9 IMEI
+	string udid = 2; // UDID
+	string idfa = 3; // iOS IDFA
+	string oaid = 4; // Android 10 OAID
+	string androidId = 5; // Android ID
+	string serial = 6; // Android 序列号
+	string brand = 7; // 设备品牌
+	string model = 8; // 设备型号
+	string arch = 9; // CPU架构
+	string os = 10; // 设备系统
+	string osVersion = 11; //系统版本
+	string mac = 12; // Wifi MAC
+	string bluetooth = 13; // 蓝牙MAC
+	string metrics = 14; // 设备分辨率
+	bool isRooted = 15; // 是否越狱/Root
+	bool isSimulator = 16; // 是否是模拟器
+
+	string extra = 20;
 }
 
 //属性
-messsge Property {
-	string carrier = 10; // 运营商
-	string connection = 11; // Wifi or 4G
-	uint64 appVersionCode = 12; // App的version code
-	string appVersion = 13; // App的版本
-	string sdkVersion = 14; // Sdk的版本
-	string geometry = 15; // 当前GPS地理位置 用空格分隔
-	string deviceAt = 16;  // 设备当前W3C时间
+message Property {
+	string carrier = 1; // 运营商
+	string connection = 2; // Wifi or 4G
+	uint64 appVersionCode = 3; // App的version code
+	string appVersion = 4; // App的版本
+	string sdkVersion = 5; // Sdk的版本
+	string geometry = 6; // 当前GPS地理位置 用空格分隔
+	string deviceAt = 7;  // 设备当前W3C时间
+
+	string extra = 10;
 }
 
 message Launch {
@@ -39,15 +43,21 @@ message Launch {
 	int64 subChannel = 3; // 子渠道
 	Property property = 3;
 	Device device = 4;
+
+	string extra = 10;
 }
 
 message Start {
 	int64 lid = 1; //AppLaunch ID
 	Property property = 2;
 	Device device = 3;
+
+	string extra = 10;
 }
 
 message Tick {
 	int64 lid = 1; //AppLaunch ID
 	Property property = 2;
+
+	string extra = 10;
 }

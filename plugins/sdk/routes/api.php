@@ -3,6 +3,11 @@
 $router->api('v1', function($router) {
 
 	$router->group(['prefix' => 'sdk'], function($router){
+
+		$router->get('ping', function(){
+			return 'pong';
+		});
+
 		/**
 		 * APP
 		 */

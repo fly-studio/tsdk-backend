@@ -4,6 +4,7 @@ namespace Plugins\Sdk\App\Http\Controllers;
 
 use Carbon\Carbon;
 use Illuminate\Http\Request;
+use Addons\Core\Http\Output\ResponseFactory;
 use Addons\Core\Exceptions\OutputResponseException;
 
 use App\AppLaunch;
