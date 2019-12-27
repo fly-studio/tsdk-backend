@@ -28,7 +28,7 @@ class Kernel extends HttpKernel
      */
     protected $middlewareGroups = [
         'web' => [
-            \App\Http\Middleware\NoCache::class,
+            \App\Http\Middleware\PostNoCache::class,
             \App\Http\Middleware\EncryptCookies::class,
             \Illuminate\Cookie\Middleware\AddQueuedCookiesToResponse::class,
             \Illuminate\Session\Middleware\StartSession::class,
@@ -66,7 +66,7 @@ class Kernel extends HttpKernel
         'scope' => \Laravel\Passport\Http\Middleware\CheckForAnyScope::class,
         'client' => \Laravel\Passport\Http\Middleware\CheckClientCredentials::class,
     ];
-    
+
     /**
      * The priority-sorted list of middleware.
      *
