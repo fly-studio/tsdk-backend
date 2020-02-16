@@ -4,6 +4,7 @@ namespace Plugins\Sdk\App\Http\Controllers;
 
 use Carbon\Carbon;
 use Illuminate\Http\Request;
+use Plugins\Attachment\App\Tools\Helpers;
 use Addons\Core\Http\Output\ResponseFactory;
 use Addons\Core\Exceptions\OutputResponseException;
 
@@ -19,15 +20,17 @@ trait CensorTrait {
 	protected $appLaunch;
 	protected $user;
 	protected $appUser;
+	private static $cipher;
 
 	protected function censorAppLaunch(Request $request)
 	{
-		$alid = $request->query('alid');
+		$alid = Helpers::decode($request->route('appLaunch'));
 
 		if (empty($alid))
 			$this->throwCensorException($request, 'sdk::app.lose_appLaunch', 4001);
 
-		$this->appLaunch = $appLaunch = (new AppLaunchRepository)->find($alid);
+
+		$appLaunch = (new AppLaunchRepository)->find($alid);
 
 		if (empty($appLaunch))
 			$this->throwCensorException($request, 'sdk::app.lose_appLaunch', 4002);
@@ -113,14 +116,4 @@ trait CensorTrait {
 			->code($code);
 	}
 
-	public function api($data, $encrypted = false, string $rsaType = 'public')
-	{
-		if (!empty($this->appLaunch))
-		{
-			$encrypted = $this->appLaunch->private_key;
-			$rsaType = 'private';
-		}
-
-		return app(ResponseFactory::class)->make('api', $data, $encrypted, $rsaType);
-	}
 }

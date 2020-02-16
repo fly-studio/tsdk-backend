@@ -17,6 +17,7 @@ return [
 
 	],
 	'routeMiddleware' => [
+		'encrypt-body-by-app-launch' => \Plugins\Sdk\App\Http\Middleware\EncryptBodyByAppLaunch::class
 	],
 	'injectViews' => [
 	],

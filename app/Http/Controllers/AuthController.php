@@ -45,10 +45,9 @@ class AuthController extends Controller
 		if ($request->offsetExists('redirect_url'))
 			$request->session()->put('url.intended', $request->input('redirect_url'));
 
-		$socialiteRepo = app(SocialiteRepository::class);
-
 		$this->_validates = $validates;
-		$this->_socialites = $socialiteRepo->findEnableDrivers(stripos($request->userAgent(), 'MicroMessenger') !== false);
+		$this->_socialites = class_exists(SocialiteRepository::class) ? app(SocialiteRepository::class)->findEnableDrivers(stripos($request->userAgent(), 'MicroMessenger') !== false) : null;
+		
 		return $this->view('login');
 	}
 
