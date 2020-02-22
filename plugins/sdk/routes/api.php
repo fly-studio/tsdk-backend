@@ -2,7 +2,7 @@
 
 $router->api('v1', function($router) {
 
-	$router->group(['prefix' => 'sdk'], function($router){
+	$router->group(['prefix' => 'sdk', 'middleware' => []], function($router){
 
 		$router->get('ping', function(){
 			return 'pong';
@@ -11,29 +11,38 @@ $router->api('v1', function($router) {
 		/**
 		 * APP
 		 */
-		$router->post('launch', 'AppController@launch');
-		$router->post('start', 'AppController@start');
-		$router->post('pause', 'AppController@pause');
-		$router->post('exception', 'AppController@exception');
-		$router->post('crash', 'AppController@crash');
-		$router->post('tick', 'AppController@tick');
+		$router->post('launch', 'AppController@launch')->middleware(['encrypt-body']);
 
-		/**
-		 * User
-		 */
-		$router->post('register', 'UserController@register');
-		$router->post('login', 'UserController@login');
-		$router->post('verify', 'UserController@verify');
-		$router->post('generate_username', 'UserController@generate_username');
-		$router->post('logout', 'UserController@logout');
+		$router->group(['middleware' => ['encrypt-body-by-app-launch']], function($router) {
 
-		/**
-		 * Purchase
-		 */
-		$router->post('pay', 'PurchaseController@pay');
-		$router->post('paid', 'PurchaseController@paid');
-		$router->post('cancel_pay', 'PurchaseController@cancel_pay');
-		$router->post('callback/{channel}', 'PurchaseController@callback');
+
+			/**
+			 * APP
+			 */
+			$router->post('start/{appLaunch}', 'AppController@start');
+			$router->post('pause/{appLaunch}', 'AppController@pause');
+			$router->post('exception/{appLaunch}', 'AppController@exception');
+			$router->post('crash/{appLaunch}', 'AppController@crash');
+			$router->post('tick/{appLaunch}', 'AppController@tick');
+
+			/**
+			 * User
+			 */
+			$router->post('register/{appLaunch}', 'UserController@register');
+			$router->post('login/{appLaunch}', 'UserController@login');
+			$router->post('verify/{appLaunch}', 'UserController@verify');
+			$router->post('generate_username/{appLaunch}', 'UserController@generate_username');
+			$router->post('logout/{appLaunch}', 'UserController@logout');
+
+			/**
+			 * Purchase
+			 */
+			$router->post('pay/{appLaunch}', 'PurchaseController@pay');
+			$router->post('paid/{appLaunch}', 'PurchaseController@paid');
+			$router->post('cancel_pay/{appLaunch}', 'PurchaseController@cancel_pay');
+			$router->post('callback//{appLaunch}/{channel}', 'PurchaseController@callback');
+		});
+
 	});
 
 });

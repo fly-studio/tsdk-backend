@@ -4,6 +4,7 @@ namespace Plugins\Sdk\App\Events;
 
 use Illuminate\Database\Eloquent\Model;
 
+use App\Catalog;
 use App\AppUser;
 use App\AppLaunch;
 use App\Repositories\AppEventRepository;
@@ -47,7 +48,7 @@ class SdkEvent {
 
 	public function handle(string $event_type)
 	{
-		$type = catalog_search('fields.event_type.'.$event_type);
+		$type = (new Catalog())->asCatalog('fields.event_type.'.$event_type);
 
 		if (empty($type))
 			throw new \Exception('Invalid event_type: '.$event_type);

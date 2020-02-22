@@ -36,9 +36,8 @@ class UserController extends Controller
 	 * @param  Request $request
 	 * @return Response
 	 */
-	public function register(Request $request)
+	public function register(Request $request, AppLaunch $appLaunch)
 	{
-		$appLaunch = $this->censorAppLaunch($request);
 		$property = $this->censorProperty($request);
 
 		$data = $this->censor($request, 'sdk::user.fileds', ['username', 'password']);
@@ -68,9 +67,8 @@ class UserController extends Controller
 	 * @param  Request $request
 	 * @return Response
 	 */
-	public function login(Request $request)
+	public function login(Request $request, AppLaunch $appLaunch)
 	{
-		$appLaunch = $this->censorAppLaunch($request);
 		$property = $this->censorProperty($request);
 
 		$data = $this->censor($request, 'sdk::user.fileds', ['username', 'password']);
@@ -108,9 +106,8 @@ class UserController extends Controller
 	 * @param  Request $request
 	 * @return Response
 	 */
-	public function verify(Request $request)
+	public function verify(Request $request, AppLaunch $appLaunch)
 	{
-		$appLaunch = $this->censorAppLaunch($request);
 		$property = $this->censorProperty($request);
 
 		[$user, $appUser] = $this->censorUser($request);
@@ -139,9 +136,8 @@ class UserController extends Controller
 	 * @param  Request $request
 	 * @return Response
 	 */
-	public function generate_username(Request $request)
+	public function generate_username(Request $request, AppLaunch $appLaunch)
 	{
-		$appLaunch = $this->censorAppLaunch($request);
 		$property = $this->censorProperty($request);
 
 		$username = '';
@@ -164,9 +160,8 @@ class UserController extends Controller
 	 * @param  Request $request
 	 * @return Response
 	 */
-	public function logout(Request $request)
+	public function logout(Request $request, AppLaunch $appLaunch)
 	{
-		$appLaunch = $this->censorAppLaunch($request);
 		$property = $this->censorProperty($request);
 
 		[$user, $appUser] = $this->censorUser($request);

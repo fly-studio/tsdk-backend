@@ -109,11 +109,11 @@ class DeviceRepository extends Repository {
 	 * @param  string $uuid
 	 * @return [type]
 	 */
-	public function bindUuid(string $app_id, string $uuid)
+	public function bindUuid(string $aid, string $uuid)
 	{
 		$uuid = str_replace('-', '', $uuid);
-		
-		return AppDevice::firstOrCreate(compact('app_id', 'uuid'));
+
+		return AppDevice::firstOrCreate(compact('aid', 'uuid'));
 	}
 
 	/**

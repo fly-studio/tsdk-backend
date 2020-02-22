@@ -28,7 +28,7 @@ class AppLaunchRepository extends Repository {
 		return AppLaunch::with(['app_device', 'app'])->findOrFail($id, $columns);
 	}
 
-	public function launch(int $aid, int $did, int $sub_channel)
+	public function launch(int $aid, int $adid, ?int $sub_channel)
 	{
 		$rsa = new RSA();
 		$rsaKeys = $rsa->createKey(1024);
@@ -36,7 +36,7 @@ class AppLaunchRepository extends Repository {
 		$private_key = $rsaKeys['privatekey'];
 		$expired_at = Carbon::now()->addDays(7);
 
-		return $this->store(compact('aid', 'did', 'sub_channel', 'public_key', 'private_key', 'expired_at'));
+		return $this->store(compact('aid', 'adid', 'sub_channel', 'public_key', 'private_key', 'expired_at'));
 	}
 
 	public function store(array $data)

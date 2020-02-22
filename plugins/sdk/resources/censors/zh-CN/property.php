@@ -28,7 +28,7 @@ return [
 		],
 		'device_at' => [
 			'name' => '设备W3C时间',
-			'rules' => ['required', 'date_format:'.\DateTime::W3C],
+			'rules' => ['required', 'date'],
 		],
 	],
 ];

@@ -6,6 +6,7 @@ use Illuminate\Support\Arr;
 use Illuminate\Http\Request;
 use Plugins\Sdk\App\Events\SdkEvent;
 use App\Http\Controllers\Controller;
+use Plugins\Attachment\App\Tools\Helpers;
 use Plugins\Sdk\App\Http\Controllers\LogTrait;
 use Plugins\Sdk\App\Http\Controllers\CensorTrait;
 
@@ -39,12 +40,15 @@ class AppController extends Controller
 	 */
 	public function launch(Request $request, AppLaunchRepository $appLaunchRepo)
 	{
-		$data = $this->censor($request, 'sdk::launch.fields', ['app_id', 'uuid', 'sub_channel']);
+		$data = $this->censor($request, 'sdk::launch.fields', ['app_id', 'uuid', 'channel', 'sub_channel']);
 
 		$device = $this->censorDevice($request);
 		$property = $this->censorProperty($request);
 
 		$app = $this->censorApp($request, $data['app_id']);
+
+		if (strcasecmp($app->channel->name, $data['channel']) != 0 )
+			$this->throwCensorException($request, 'sdk::app.invalid_channel', 4008);
 
 		//关联UUID+APPID
 		$appDevice = $this->deviceRepo->bindUuid($app->getKey(), $data['uuid']);
@@ -52,7 +56,7 @@ class AppController extends Controller
 		$this->attachDevice($appDevice, $device);
 
 		// 添加启动记录
-		$appLaunch = $appLaunchRepo->launch($app->getKey(), $appDevice->getKey());
+		$appLaunch = $appLaunchRepo->launch($app->getKey(), $appDevice->getKey(), $data['sub_channel']);
 
 		// 记录event
 		(new SdkEvent($appLaunch, $property))
@@ -62,7 +66,8 @@ class AppController extends Controller
 
 		return $this->api([
 			'need_device_id' => empty($appDevice->did),
-			'alid' => $appLaunch->getKey(),
+			'alid' => Helpers::encode($appLaunch->getKey()),
+			'channel' => $app->channel->name,
 			'expired_at' => $appLaunch->expired_at->getTimestamp(),
 			'public_key' => $appLaunch->public_key
 		]);
@@ -75,9 +80,8 @@ class AppController extends Controller
 	 * @param  Request $request
 	 * @return Response
 	 */
-	public function start(Request $request)
+	public function start(Request $request, AppLaunch $appLaunch)
 	{
-		$appLaunch = $this->censorAppLaunch($request);
 
 		$device = $this->censorDevice($request);
 		$property = $this->censorProperty($request);
@@ -99,9 +103,8 @@ class AppController extends Controller
 	 * @param  Request $request
 	 * @return Response
 	 */
-	public function pause(Request $request)
+	public function pause(Request $request, AppLaunch $appLaunch)
 	{
-		$appLaunch = $this->censorAppLaunch($request);
 		$property = $this->censorProperty($request);
 
 		(new SdkEvent($appLaunch, $property))
@@ -116,9 +119,8 @@ class AppController extends Controller
 	 * @param  Request $request
 	 * @return Response
 	 */
-	public function tick(Request $request)
+	public function tick(Request $request, AppLaunch $appLaunch)
 	{
-		$appLaunch = $this->censorAppLaunch($request);
 		$property = $this->censorProperty($request);
 
 		(new SdkEvent($appLaunch, $property))
@@ -133,9 +135,8 @@ class AppController extends Controller
 	 * @param  Request $request
 	 * @return Response
 	 */
-	public function exception(Request $request)
+	public function exception(Request $request, AppLaunch $appLaunch)
 	{
-		$appLaunch = $this->censorAppLaunch($request);
 
 		$property = $this->censorProperty($request);
 
@@ -154,9 +155,8 @@ class AppController extends Controller
 	 * @param  Request $request
 	 * @return Response
 	 */
-	public function crash(Request $request)
+	public function crash(Request $request, AppLaunch $appLaunch)
 	{
-		$appLaunch = $this->censorAppLaunch($request);
 		$property = $this->censorProperty($request);
 
 		$exception = $request->input('exception');

@@ -51,13 +51,16 @@ trait CensorTrait {
 		if (empty($app))
 			$this->throwCensorException($request, 'sdk::app.lose_app', 4004);
 
+		if (empty($app->app_status) || $app->app_status->name != 'enabled')
+			$this->throwCensorException($request, 'sdk::app.app_disabled', 4005);
+
 		return $app;
 	}
 
 	protected function censorDevice(Request $request)
 	{
 		if (!is_array($request->device))
-			$this->throwCensorException($request, 'sdk::app.lose_device', 4005);
+			$this->throwCensorException($request, 'sdk::app.lose_device', 4006);
 
 		$data = $this->censor($request->device, 'sdk::device.fields', ['*']);
 
@@ -67,7 +70,7 @@ trait CensorTrait {
 	protected function censorProperty(Request $request)
 	{
 		if (!is_array($request->property))
-			$this->throwCensorException($request, 'sdk::app.lose_device', 4006);
+			$this->throwCensorException($request, 'sdk::app.lose_device', 4007);
 
 		$data = $this->censor($request->property, 'sdk::property.fields', ['*']);
 

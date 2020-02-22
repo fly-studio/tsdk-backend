@@ -4,15 +4,15 @@ return [
 	'fields' => [
 		'imei' => [
 			'name' => '国际移动设备识别码',
-			'rules' => 'string|min:9',
+			'rules' => 'nullable|min:9',
 		],
 		'idfa' => [
 			'name' => '苹果IDFA',
-			'rules' => 'string|min:9',
+			'rules' => 'nullable|min:9',
 		],
 		'oaid' => [
 			'name' => '移动安全联盟的OAID',
-			'rules' => 'string|min:9',
+			'rules' => 'nullable|min:9',
 		],
 		'android_id' => [
 			'name' => 'Android ID',

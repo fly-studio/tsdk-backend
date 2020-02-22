@@ -30,9 +30,8 @@ class PurchaseController extends Controller
 	 * @param  Request $request
 	 * @return Response
 	 */
-	public function pay(Request $request)
+	public function pay(Request $request, AppLaunch $appLaunch)
 	{
-		$appLaunch = $this->censorAppLaunch($request);
 		$property = $this->censorProperty($request);
 		[$user, $appUser] = $this->censorUser($request);
 
@@ -67,9 +66,8 @@ class PurchaseController extends Controller
 	 * @param  Request $request
 	 * @return Response
 	 */
-	public function paid(Request $request)
+	public function paid(Request $request, AppLaunch $appLaunch)
 	{
-		$appLaunch = $this->censorAppLaunch($request);
 		$property = $this->censorProperty($request);
 		[$user, $appUser] = $this->censorUser($request);
 
@@ -90,9 +88,8 @@ class PurchaseController extends Controller
 	 * @param  Request $request
 	 * @return Response
 	 */
-	public function cancel_pay(Request $request)
+	public function cancel_pay(Request $request, AppLaunch $appLaunch)
 	{
-		$appLaunch = $this->censorAppLaunch($request);
 		$property = $this->censorProperty($request);
 		[$user, $appUser] = $this->censorUser($request);
 
@@ -112,7 +109,7 @@ class PurchaseController extends Controller
 	 * @param  Request  $request [description]
 	 * @return Response
 	 */
-	public function callback(Request $request, string $channel)
+	public function callback(Request $request, AppLaunch $appLaunch, string $channel)
 	{
 		$channel = catalog_search('fields.channel.'.$channel);
 
