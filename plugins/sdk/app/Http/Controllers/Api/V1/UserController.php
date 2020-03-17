@@ -36,7 +36,7 @@ class UserController extends Controller
 	 * @param  Request $request
 	 * @return Response
 	 */
-	public function register(Request $request, AppLaunch $appLaunch)
+	public function register(Request $request, $appLaunch)
 	{
 		$property = $this->censorProperty($request);
 
@@ -67,7 +67,7 @@ class UserController extends Controller
 	 * @param  Request $request
 	 * @return Response
 	 */
-	public function login(Request $request, AppLaunch $appLaunch)
+	public function login(Request $request, $appLaunch)
 	{
 		$property = $this->censorProperty($request);
 
@@ -106,7 +106,7 @@ class UserController extends Controller
 	 * @param  Request $request
 	 * @return Response
 	 */
-	public function verify(Request $request, AppLaunch $appLaunch)
+	public function verify(Request $request, $appLaunch)
 	{
 		$property = $this->censorProperty($request);
 
@@ -136,7 +136,7 @@ class UserController extends Controller
 	 * @param  Request $request
 	 * @return Response
 	 */
-	public function generate_username(Request $request, AppLaunch $appLaunch)
+	public function generate_username(Request $request, $appLaunch)
 	{
 		$property = $this->censorProperty($request);
 
@@ -160,7 +160,7 @@ class UserController extends Controller
 	 * @param  Request $request
 	 * @return Response
 	 */
-	public function logout(Request $request, AppLaunch $appLaunch)
+	public function logout(Request $request, $appLaunch)
 	{
 		$property = $this->censorProperty($request);
 

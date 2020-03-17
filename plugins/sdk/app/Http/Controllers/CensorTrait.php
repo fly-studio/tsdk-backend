@@ -29,7 +29,6 @@ trait CensorTrait {
 		if (empty($alid))
 			$this->throwCensorException($request, 'sdk::app.lose_appLaunch', 4001);
 
-
 		$appLaunch = (new AppLaunchRepository)->find($alid);
 
 		if (empty($appLaunch))

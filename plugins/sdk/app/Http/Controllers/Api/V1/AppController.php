@@ -80,7 +80,7 @@ class AppController extends Controller
 	 * @param  Request $request
 	 * @return Response
 	 */
-	public function start(Request $request, AppLaunch $appLaunch)
+	public function start(Request $request, $appLaunch)
 	{
 
 		$device = $this->censorDevice($request);
@@ -103,7 +103,7 @@ class AppController extends Controller
 	 * @param  Request $request
 	 * @return Response
 	 */
-	public function pause(Request $request, AppLaunch $appLaunch)
+	public function pause(Request $request, $appLaunch)
 	{
 		$property = $this->censorProperty($request);
 
@@ -119,7 +119,7 @@ class AppController extends Controller
 	 * @param  Request $request
 	 * @return Response
 	 */
-	public function tick(Request $request, AppLaunch $appLaunch)
+	public function tick(Request $request, $appLaunch)
 	{
 		$property = $this->censorProperty($request);
 
@@ -135,7 +135,7 @@ class AppController extends Controller
 	 * @param  Request $request
 	 * @return Response
 	 */
-	public function exception(Request $request, AppLaunch $appLaunch)
+	public function exception(Request $request, $appLaunch)
 	{
 
 		$property = $this->censorProperty($request);
@@ -155,7 +155,7 @@ class AppController extends Controller
 	 * @param  Request $request
 	 * @return Response
 	 */
-	public function crash(Request $request, AppLaunch $appLaunch)
+	public function crash(Request $request, $appLaunch)
 	{
 		$property = $this->censorProperty($request);
 

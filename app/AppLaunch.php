@@ -8,6 +8,7 @@ class AppLaunch extends Model
 {
 	protected $guarded = ['id'];
 	protected $dates = ['expired_at'];
+	protected $hidden = ['public_key', 'private_key'];
 
 	public function app()
 	{
